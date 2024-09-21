@@ -1,0 +1,41 @@
+fun numberToWords(n: Int): String {
+    if (n < 1 || n > 999999999) {
+        return "Number out of range"
+    }
+
+    val units = arrayOf("", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine")
+    val teens = arrayOf("ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen")
+    val tens = arrayOf("", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety")
+    val thousands = arrayOf("", "thousand", "million")
+
+    fun convertHundreds(num: Int): String {
+        return when {
+            num == 0 -> ""
+            num < 10 -> units[num]
+            num < 20 -> teens[num - 10]
+            num < 100 -> "${tens[num / 10]}${if (num % 10 != 0) " ${units[num % 10]}" else ""}"
+            else -> "${units[num / 100]} hundred${if (num % 100 != 0) " ${convertHundreds(num % 100)}" else ""}"
+        }
+    }
+
+    val words = mutableListOf<String>()
+    var currentNumber = n
+    for (i in thousands.indices) {
+        if (currentNumber % 1000 != 0) {
+            words.add("${convertHundreds(currentNumber % 1000)} ${thousands[i]}")
+        }
+        currentNumber /= 1000
+        if (currentNumber == 0) break
+    }
+
+    return words.reversed().joinToString(" ").trim()
+}
+
+// Examples
+fun main() {
+    println(numberToWords(1000))         // Output: "one thousand"
+    println(numberToWords(4003))         // Output: "four thousand three"
+    println(numberToWords(123456789))    // Output: "one hundred twenty three million four hundred fifty six thousand seven hundred eighty nine"
+    println(numberToWords(0))             // Output: "Number out of range"
+    println(numberToWords(1000000000))    // Output: "Number out of range"
+}
